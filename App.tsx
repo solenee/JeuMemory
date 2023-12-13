@@ -1,12 +1,13 @@
 /**
- * Sample React Native App
+ * Memory game
+ * 
+ * Bootstrapped from Sample React Native App
  * https://github.com/facebook/react-native
  *
  * @format
  */
 
 import React, {useState} from 'react';
-import type {PropsWithChildren} from 'react';
 import {
   Button,
   Image,
@@ -14,7 +15,6 @@ import {
   FlatList,
   Pressable,
   SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -24,12 +24,7 @@ import {
 
 import {
   Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
 
 const defaultCardBackImageUri = 'https://reactnative.dev/img/tiny_logo.png';
 const defaultCardFrontImageUri = 'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png';
@@ -45,7 +40,6 @@ type CardProps = {
 
 const Card = (props: CardProps) => {
   return (
-
     <Pressable onPress={props.onFlip}>
       <Image source={props.isFlipped? props.frontImage : props.backImage} />
     </Pressable>
@@ -58,39 +52,15 @@ const Board = ({}) => {
   const [candidate2, setCandidate2] = useState<MyCardData|undefined>(undefined);
   const [pairsFound, setPairsFound] = useState<number[]>([]);
 
-  
-  const evaluatePair = (selectedCandidate1: MyCardData, selectedCandidate2: MyCardData) => {
-    console.log('evaluatePair -- START');
-    console.log(`Evaluating [${selectedCandidate1?.id}, ${selectedCandidate2?.id}]`);
+  // Model logic 
 
-    // if (match) then reflect it on the board (keep cards on the front)
-    if (selectedCandidate1.frontImageUri === selectedCandidate2.frontImageUri) {
-      console.log(`Recording match: [${selectedCandidate1?.id}, ${selectedCandidate2?.id}]`);
-      setPairsFound((pairs) => [...pairs, selectedCandidate1.id, selectedCandidate2.id]);
-      clearSelectedCandidates();
-    } else {
-      // flip cards back
-      console.log('Flipping back the cards selected: [' + selectedCandidate1?.id
-      + ',' + selectedCandidate2?.id + ']');
-      setTimeout(() => {console.log('Wait...'); clearSelectedCandidates();}, 3000);
-      console.log('After setTimeout...');;
-    }
-    console.log('evaluatePair -- END');
-
-  }
-
-  function clearSelectedCandidates() {
-    setCandidate1(undefined);
-    setCandidate2(undefined);
-  }
-
-  function resetBoard() {
-    setPairsFound([]); clearSelectedCandidates();
+  const isMatchingPair = (selectedCandidate1: MyCardData, selectedCandidate2: MyCardData) => {
+    return selectedCandidate1.frontImageUri === selectedCandidate2.frontImageUri;
   }
 
   const recordCardFlip = (cardData: any) => {
     console.log('Attempt to flip card [' + cardData.id + ']');
-    if (isCardSelectionRecorded(cardData) || isCardAlreadyMatched(cardData)) {
+    if (isCardSelectionAlreadyRecorded(cardData) || isCardAlreadyMatched(cardData)) {
       // ignore; already recorded
       return;
     }
@@ -99,14 +69,45 @@ const Board = ({}) => {
     } else if (candidate2 === undefined) {
       const selectedCandidate2 = cardData;
       setCandidate2(selectedCandidate2);
-      setTimeout(() => {console.log('Wait...'); evaluatePair(candidate1, selectedCandidate2);}, 2000);
-      console.log('After setTimeout...');
+      evaluatePair(candidate1, selectedCandidate2);
     }
   }
 
-  const isCardSelectionRecorded = (cardData: MyCardData) => {
+  const evaluatePair = (selectedCandidate1: MyCardData, selectedCandidate2: MyCardData) => {
+    console.log('evaluatePair -- START');
+    console.log(`Evaluating [${selectedCandidate1?.id}, ${selectedCandidate2?.id}]`);
+
+    if (isMatchingPair(selectedCandidate1, selectedCandidate2)) {
+      // reflect matching pair discovery on the board: keep cards on the front side
+      console.log(`Recording match: [${selectedCandidate1?.id}, ${selectedCandidate2?.id}]`);
+      setPairsFound((pairs) => [...pairs, selectedCandidate1.id, selectedCandidate2.id]);
+      clearSelectedCandidates();
+    } else {
+      // flip cards back
+      console.log('Flipping back the cards selected: [' + selectedCandidate1?.id
+      + ',' + selectedCandidate2?.id + ']');
+      setTimeout(() => {console.log('Wait...'); clearSelectedCandidates();}, 2000);
+      console.log('After setTimeout...');;
+    }
+    console.log('evaluatePair -- END');
+  }
+
+  // State modifiers
+
+  const clearSelectedCandidates = () => {
+    setCandidate1(undefined);
+    setCandidate2(undefined);
+  }
+
+  const resetBoard = () => {
+    setPairsFound([]); clearSelectedCandidates();
+  }
+
+  // State checkers
+
+  const isCardSelectionAlreadyRecorded = (cardData: MyCardData) => {
     const result = (candidate1?.id === cardData.id) || (candidate2?.id === cardData.id);
-    console.log(`isCardSelectionRecorded: [${cardData.id}, ${result}]`);
+    console.log(`isCardSelectionAlreadyRecorded: [${cardData.id}, ${result}]`);
     return result;
   }
 
@@ -116,6 +117,8 @@ const Board = ({}) => {
     return result;
   }
 
+  // Visual component 
+  
   const newCard = (cardData: MyCardData) => {
     return (
       <Card 
@@ -131,7 +134,7 @@ const Board = ({}) => {
           height: 64,
         }}
         onFlip={() => recordCardFlip(cardData)}
-        isFlipped={isCardSelectionRecorded(cardData)|| (isCardAlreadyMatched(cardData))}
+        isFlipped={isCardSelectionAlreadyRecorded(cardData)|| (isCardAlreadyMatched(cardData))}
       />
     );
   }
@@ -170,7 +173,7 @@ const Board = ({}) => {
               keyExtractor={item => `${item.id}`}
               //columnWrapperStyle={styles.flatlistRow}
         />
-        <Text>{//'numberOfCardsFlipped = [' + numberOfCardsFlipped + ']; 
+        <Text>{
           'candidates = [' 
           + candidate1?.id
           + ',' + candidate2?.id + ']'}
@@ -179,38 +182,6 @@ const Board = ({}) => {
       <Button title='Rejouer' onPress={() => resetBoard()}/>
     </View>
     
-  );
-}
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
   );
 }
 
@@ -241,24 +212,9 @@ function App(): JSX.Element {
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
   boardContainer: {
     //flex: 1,
+    marginTop: 32,
     alignItems: "center"
   }
 });
