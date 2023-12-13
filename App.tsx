@@ -118,7 +118,7 @@ const Board = ({}) => {
   }
 
   // Visual component 
-  
+
   const newCard = (cardData: MyCardData) => {
     return (
       <Card 
@@ -168,7 +168,7 @@ const Board = ({}) => {
       <View style={styles.boardContainer}>
         <FlatList
               data={cardsData}
-              renderItem={item => newCard(item.item)}
+              renderItem={({item}) => newCard(item)}
               numColumns={2}
               keyExtractor={item => `${item.id}`}
               //columnWrapperStyle={styles.flatlistRow}
