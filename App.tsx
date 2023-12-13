@@ -34,7 +34,7 @@ type CardProps = {
   cardId: number;
   backImage: ImageSourcePropType;
   frontImage: ImageSourcePropType;
-  onFlip: any;
+  onFlip: () => void;
   isFlipped: boolean;
 }; 
 
@@ -58,7 +58,7 @@ const Board = ({}) => {
     return selectedCandidate1.frontImageUri === selectedCandidate2.frontImageUri;
   }
 
-  const recordCardFlip = (cardData: any) => {
+  const recordCardFlip = (cardData: MyCardData) => {
     console.log('Attempt to flip card [' + cardData.id + ']');
     if (isCardSelectionAlreadyRecorded(cardData) || isCardAlreadyMatched(cardData)) {
       // ignore; already recorded
@@ -86,7 +86,8 @@ const Board = ({}) => {
       // flip cards back
       console.log('Flipping back the cards selected: [' + selectedCandidate1?.id
       + ',' + selectedCandidate2?.id + ']');
-      setTimeout(() => {console.log('Wait...'); clearSelectedCandidates();}, 2000);
+      const waitTimeMs: number = 2000;
+      setTimeout(() => {console.log('Wait...'); clearSelectedCandidates();}, waitTimeMs);
       console.log('After setTimeout...');;
     }
     console.log('evaluatePair -- END');
@@ -163,15 +164,16 @@ const Board = ({}) => {
     }
   ];
 
+  const numberOfColumns: number = 2;
+
   return (
     <View>
       <View style={styles.boardContainer}>
-        <FlatList
-              data={cardsData}
-              renderItem={({item}) => newCard(item)}
-              numColumns={2}
-              keyExtractor={item => `${item.id}`}
-              //columnWrapperStyle={styles.flatlistRow}
+        <FlatList 
+          data={cardsData}
+          renderItem={({item}) => newCard(item)}
+          numColumns={numberOfColumns}
+          keyExtractor={item => `${item.id}`}
         />
         <Text>{
           'candidates = [' 
@@ -199,14 +201,14 @@ function App(): JSX.Element {
         backgroundColor={backgroundStyle.backgroundColor}
       />
 
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          
-          <Board />
+      <View
+        style={{
+          backgroundColor: isDarkMode ? Colors.black : Colors.white,
+        }}>
+        
+        <Board />
 
-        </View>
+      </View>
     </SafeAreaView>
   );
 }
