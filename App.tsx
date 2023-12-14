@@ -38,7 +38,7 @@ type CardProps = {
 
 const Card = (props: CardProps) => {
   return (
-    <Pressable onPress={props.onFlip}>
+    <Pressable onPress={props.onFlip} disabled={props.isFlipped}>
       <Image source={props.isFlipped? props.frontImage : props.backImage} />
     </Pressable>
   );
@@ -113,13 +113,13 @@ const Board = (props: BoardProps) => {
 
   const isCardSelectionAlreadyRecorded = (cardData: MyCardData) => {
     const result = (candidate1?.id === cardData.id) || (candidate2?.id === cardData.id);
-    console.log(`isCardSelectionAlreadyRecorded: [${cardData.id}, ${result}]`);
+    // console.log(`isCardSelectionAlreadyRecorded: [${cardData.id}, ${result}]`);
     return result;
   }
 
   const isCardAlreadyMatched = (cardData: MyCardData) => {
     const result = pairsFound.includes(cardData.id);
-    console.log(`isCardAlreadyMatched: [${cardData.id}, ${result}]`);
+    // console.log(`isCardAlreadyMatched: [${cardData.id}, ${result}]`);
     return result;
   }
 
@@ -174,6 +174,8 @@ function App(): JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  // Cards provider
+
   const IMAGE_URI_BANK : string[] = [
     'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
     'https://github.com/solenee.png',
@@ -186,9 +188,8 @@ function App(): JSX.Element {
   const generateCardsData = (numberOfPairs: number) => {
     const numberOfPairsToGenerate: number = Math.min(numberOfPairs, IMAGE_URI_BANK.length);
     let data: MyCardData[] = [];
-    let pairId: number;
     let cardId: number = 0;
-    for (pairId = 0; pairId < numberOfPairsToGenerate; pairId++) {
+    for (let pairId = 0; pairId < numberOfPairsToGenerate; pairId++) {
       data = [...data, 
         {
           id: cardId,
@@ -226,6 +227,8 @@ function App(): JSX.Element {
     return card1.frontImageUri === card2.frontImageUri;
   }
 
+  // Game
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -249,6 +252,7 @@ const styles = StyleSheet.create({
   boardContainer: {
     //flex: 1,
     marginTop: 32,
+    marginBottom: 32,
     alignItems: "center"
   }
 });
