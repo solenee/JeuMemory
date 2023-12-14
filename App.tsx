@@ -27,8 +27,6 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 const defaultCardBackImageUri = 'https://reactnative.dev/img/tiny_logo.png';
-const defaultCardFrontImageUri = 'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png';
-const soleneeGithubImageUri = 'https://github.com/solenee.png';
 
 type CardProps = {
   cardId: number;
@@ -46,17 +44,24 @@ const Card = (props: CardProps) => {
   );
 }
 
+type MyCardData = {
+  id: number,
+  frontImageUri: string
+};
 
-const Board = ({}) => {
+type BoardProps = {
+  cardsData: MyCardData[];
+  numberOfColumns: number;
+  isMatchingPair: (card1: MyCardData, card2: MyCardData) => boolean;
+  debugMode: boolean;
+};
+
+const Board = (props: BoardProps) => {
   const [candidate1, setCandidate1] = useState<MyCardData|undefined>(undefined);
   const [candidate2, setCandidate2] = useState<MyCardData|undefined>(undefined);
   const [pairsFound, setPairsFound] = useState<number[]>([]);
 
   // Model logic 
-
-  const isMatchingPair = (selectedCandidate1: MyCardData, selectedCandidate2: MyCardData) => {
-    return selectedCandidate1.frontImageUri === selectedCandidate2.frontImageUri;
-  }
 
   const recordCardFlip = (cardData: MyCardData) => {
     console.log('Attempt to flip card [' + cardData.id + ']');
@@ -77,7 +82,7 @@ const Board = ({}) => {
     console.log('evaluatePair -- START');
     console.log(`Evaluating [${selectedCandidate1?.id}, ${selectedCandidate2?.id}]`);
 
-    if (isMatchingPair(selectedCandidate1, selectedCandidate2)) {
+    if (props.isMatchingPair(selectedCandidate1, selectedCandidate2)) {
       // reflect matching pair discovery on the board: keep cards on the front side
       console.log(`Recording match: [${selectedCandidate1?.id}, ${selectedCandidate2?.id}]`);
       setPairsFound((pairs) => [...pairs, selectedCandidate1.id, selectedCandidate2.id]);
@@ -120,7 +125,7 @@ const Board = ({}) => {
 
   // Visual component 
 
-  const newCard = (cardData: MyCardData) => {
+  const renderCard = (cardData: MyCardData) => {
     return (
       <Card 
         cardId={cardData.id}
@@ -140,50 +145,25 @@ const Board = ({}) => {
     );
   }
 
-  type MyCardData = {
-    id: number,
-    frontImageUri: string
-  };
-
-  const cardsData: MyCardData[] = [
-    {
-      id: 0,
-      frontImageUri: soleneeGithubImageUri
-    },
-    {
-      id: 1,
-      frontImageUri: defaultCardFrontImageUri
-    },
-    {
-      id: 2,
-      frontImageUri: soleneeGithubImageUri
-    },
-    {
-      id: 3,
-      frontImageUri: defaultCardFrontImageUri
-    }
-  ];
-
-  const numberOfColumns: number = 2;
-
   return (
     <View>
       <View style={styles.boardContainer}>
         <FlatList 
-          data={cardsData}
-          renderItem={({item}) => newCard(item)}
-          numColumns={numberOfColumns}
+          data={props.cardsData}
+          renderItem={({item}) => renderCard(item)}
+          numColumns={props.numberOfColumns}
           keyExtractor={item => `${item.id}`}
         />
-        <Text>{
-          'candidates = [' 
-          + candidate1?.id
-          + ',' + candidate2?.id + ']'}
-        </Text>
+        {props.debugMode && (
+          <Text>{
+            'candidates = [' 
+            + candidate1?.id
+            + ',' + candidate2?.id + ']'}
+          </Text>
+        )}
       </View>
       <Button title='Rejouer' onPress={() => resetBoard()}/>
     </View>
-    
   );
 }
 
@@ -193,6 +173,42 @@ function App(): JSX.Element {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  const IMAGE_URI_BANK : string[] = [
+    'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
+    'https://github.com/solenee.png',
+    'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/musique-min.jpg',
+    'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/plat-min.jpg',
+    'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/banane-min.jpg',
+    'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/maison-min.jpg'
+  ];
+
+  const generateCardsData = (numberOfPairs: number) => {
+    const numberOfPairsToGenerate: number = Math.min(numberOfPairs, IMAGE_URI_BANK.length);
+    let data: MyCardData[] = [];
+    let pairId: number;
+    let cardId: number = 0;
+    for (pairId = 0; pairId < numberOfPairsToGenerate; pairId++) {
+      data = [...data, 
+        {
+          id: cardId,
+          frontImageUri: IMAGE_URI_BANK[pairId]
+        },
+        {
+          id: cardId+1,
+          frontImageUri: IMAGE_URI_BANK[pairId]
+        }
+      ]
+      cardId += 2;
+    }
+    return data;
+  }
+
+  const cardsData: MyCardData[] = generateCardsData(10);
+  
+  const isMatchingPair = (card1: MyCardData, card2: MyCardData) => {
+    return card1.frontImageUri === card2.frontImageUri;
+  }
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -206,7 +222,7 @@ function App(): JSX.Element {
           backgroundColor: isDarkMode ? Colors.black : Colors.white,
         }}>
         
-        <Board />
+        <Board cardsData={cardsData} numberOfColumns={3} isMatchingPair={isMatchingPair} debugMode={true}/>
 
       </View>
     </SafeAreaView>
