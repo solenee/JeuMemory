@@ -30,16 +30,24 @@ const defaultCardBackImageUri = 'https://reactnative.dev/img/tiny_logo.png';
 
 type CardProps = {
   cardId: number;
-  backImage: ImageSourcePropType;
-  frontImage: ImageSourcePropType;
+  backImageUri: string;
+  frontImageUri: string;
   onFlip: () => void;
   isFlipped: boolean;
 };
 
 const Card = (cardProps: CardProps) => {
+  const backImage: ImageSourcePropType = {
+    ...styles.cardDimensions,
+    uri: cardProps.backImageUri,
+  };
+  const frontImage: ImageSourcePropType = {
+    ...styles.cardDimensions,
+    uri: cardProps.frontImageUri,
+  };
   return (
     <Pressable onPress={cardProps.onFlip} disabled={cardProps.isFlipped}>
-      <Image source={cardProps.isFlipped? cardProps.frontImage : cardProps.backImage} />
+      <Image source={cardProps.isFlipped? frontImage : backImage} />
     </Pressable>
   );
 }
@@ -90,6 +98,10 @@ const FLAG_BANK = {
 
 // usage: <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.dz}/>
 const EmojiCard = ({cardProps, emoji}: EmojiCardProps) => {
+  const backImage: ImageSourcePropType = {
+    ...styles.cardDimensions,
+    uri: cardProps.backImageUri,
+  };
   return (
     <Pressable onPress={cardProps.onFlip} disabled={cardProps.isFlipped}>
       {cardProps.isFlipped ?
@@ -97,7 +109,7 @@ const EmojiCard = ({cardProps, emoji}: EmojiCardProps) => {
           <Text style={{fontSize: 40}}>{emoji} </Text>
         </View>
       :
-        <Image source={cardProps.backImage} />
+        <Image source={backImage} />
       }
     </Pressable>
   );
@@ -188,14 +200,8 @@ const Board = (props: BoardProps) => {
     return (
       <Card 
         cardId={cardData.id}
-        backImage={{
-          ...styles.cardDimensions,
-          uri: defaultCardBackImageUri,
-        }}
-        frontImage={{
-          ...styles.cardDimensions,
-          uri: cardData.frontImageUri,
-        }}
+        backImageUri={defaultCardBackImageUri}
+        frontImageUri={cardData.frontImageUri}
         onFlip={() => recordCardFlip(cardData)}
         isFlipped={isCardSelectionAlreadyRecorded(cardData)|| (isCardAlreadyMatched(cardData))}
       />
