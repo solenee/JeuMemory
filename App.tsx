@@ -45,11 +45,35 @@ const Card = (cardProps: CardProps) => {
     ...styles.cardDimensions,
     uri: cardProps.frontImageUri,
   };
-  return (
-    <Pressable onPress={cardProps.onFlip} disabled={cardProps.isFlipped}>
-      <Image source={cardProps.isFlipped? frontImage : backImage} />
-    </Pressable>
-  );
+  // return (
+  //   <Pressable onPress={cardProps.onFlip} disabled={cardProps.isFlipped}>
+  //     <Image source={cardProps.isFlipped? frontImage : backImage} />
+  //   </Pressable>
+  // );
+  const pairIdentifier = cardProps.frontImageUri;
+  if (pairIdentifier === IMAGE_URI_BANK[0]) {
+    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.eg}/>;
+  } else
+  if (pairIdentifier === IMAGE_URI_BANK[1]) {
+    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.ci}/>;
+  } else
+  if (pairIdentifier === IMAGE_URI_BANK[2]) {
+    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.cm}/>;
+  } else
+  if (pairIdentifier === IMAGE_URI_BANK[3]) {
+    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.gh}/>;
+  } else
+  if (pairIdentifier === IMAGE_URI_BANK[4]) {
+    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.ng}/>;
+  } else
+  if (pairIdentifier === IMAGE_URI_BANK[5]) {
+    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.dz}/>;
+  } else
+  if (pairIdentifier === IMAGE_URI_BANK[6]) {
+    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.cd}/>;
+  } else {
+    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.za}/>;
+  }
 }
 
 type EmojiCardProps = {
@@ -126,6 +150,15 @@ type BoardProps = {
   isMatchingPair: (card1: MyCardData, card2: MyCardData) => boolean;
   debugMode: boolean;
 };
+
+const IMAGE_URI_BANK : string[] = [
+  'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
+  'https://github.com/solenee.png',
+  'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/musique-min.jpg',
+  'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/plat-min.jpg',
+  'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/banane-min.jpg',
+  'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/maison-min.jpg'
+];
 
 const Board = (props: BoardProps) => {
   const [candidate1, setCandidate1] = useState<MyCardData|undefined>(undefined);
@@ -238,15 +271,6 @@ function App(): JSX.Element {
   };
 
   // Cards provider
-
-  const IMAGE_URI_BANK : string[] = [
-    'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
-    'https://github.com/solenee.png',
-    'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/musique-min.jpg',
-    'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/plat-min.jpg',
-    'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/banane-min.jpg',
-    'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/maison-min.jpg'
-  ];
 
   const generateCardsData = (numberOfPairs: number) => {
     const numberOfPairsToGenerate: number = Math.min(numberOfPairs, IMAGE_URI_BANK.length);
