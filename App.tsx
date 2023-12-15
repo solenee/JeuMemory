@@ -196,7 +196,7 @@ const Board = (props: BoardProps) => {
       // flip cards back
       console.log('Flipping back the cards selected: [' + selectedCandidate1?.id
       + ',' + selectedCandidate2?.id + ']');
-      const waitTimeMs: number = 2000;
+      const waitTimeMs: number = 1250;
       setTimeout(() => {console.log('Wait...'); clearSelectedCandidates();}, waitTimeMs);
       console.log('After setTimeout...');;
     }
@@ -344,7 +344,7 @@ function App(): JSX.Element {
           numberOfColumns={3}
           isMatchingPair={isMatchingPair}
           onRestart={() => {console.log('onRestart'); shuffle(cardsData)}}
-          debugMode={true}
+          debugMode={false}
         />
 
       </View>
