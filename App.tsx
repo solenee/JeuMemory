@@ -7,7 +7,7 @@
  * @format
  */
 
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {
   Button,
   Image,
@@ -148,6 +148,7 @@ type BoardProps = {
   cardsData: MyCardData[];
   numberOfColumns: number;
   isMatchingPair: (card1: MyCardData, card2: MyCardData) => boolean;
+  onRestart: () => void;
   debugMode: boolean;
 };
 
@@ -258,7 +259,7 @@ const Board = (props: BoardProps) => {
           </Text>
         )}
       </View>
-      <Button title='Rejouer' onPress={() => resetBoard()}/>
+      <Button title='Rejouer' onPress={() => {props.onRestart(); resetBoard();}}/>
     </View>
   );
 }
@@ -272,43 +273,53 @@ function App(): JSX.Element {
 
   // Cards provider
 
-  const generateCardsData = (numberOfPairs: number) => {
-    const numberOfPairsToGenerate: number = Math.min(numberOfPairs, IMAGE_URI_BANK.length);
+  function rawCardsData(numberOfPairsToGenerate: number) {
     let data: MyCardData[] = [];
     let cardId: number = 0;
     for (let pairId = 0; pairId < numberOfPairsToGenerate; pairId++) {
-      data = [...data, 
-        {
-          id: cardId,
-          frontImageUri: IMAGE_URI_BANK[pairId]
-        },
-        {
-          id: cardId+1,
-          frontImageUri: IMAGE_URI_BANK[pairId]
-        }
-      ]
+      data = [...data,
+      {
+        id: cardId,
+        frontImageUri: IMAGE_URI_BANK[pairId]
+      },
+      {
+        id: cardId + 1,
+        frontImageUri: IMAGE_URI_BANK[pairId]
+      }
+      ];
       cardId += 2;
     }
-
-    // Fisher-Yates shuffle
-    function shuffle(array: MyCardData[]) {
-      for (let i = array.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i
-    
-        // swap elements array[i] and array[j]
-        // we use "destructuring assignment" syntax to achieve that
-        // you'll find more details about that syntax in later chapters
-        // same can be written as:
-        // let t = array[i]; array[i] = array[j]; array[j] = t
-        [array[i], array[j]] = [array[j], array[i]];
-      }
+    return data;
+  }
+  
+  // Fisher-Yates shuffle
+  function shuffle(array: MyCardData[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i
+  
+      // swap elements array[i] and array[j]
+      // we use "destructuring assignment" syntax to achieve that
+      // you'll find more details about that syntax in later chapters
+      // same can be written as:
+      // let t = array[i]; array[i] = array[j]; array[j] = t
+      [array[i], array[j]] = [array[j], array[i]];
     }
+  }
 
+  const generateCardsData = (numberOfPairs: number) => {
+    const numberOfPairsToGenerate: number = Math.min(numberOfPairs, IMAGE_URI_BANK.length);
+    let data: MyCardData[] = rawCardsData(numberOfPairsToGenerate);
     shuffle(data);
     return data;
   }
 
-  const cardsData: MyCardData[] = generateCardsData(10);
+  // This tells React that you don’t want the inner function to re-run unless the variables in [] have changed.
+  // Use memoization for pure calculation that take a significant amount (say, 1ms or more).
+  // Computation time can be evaluated with console.time('myFunction'); myFunction(); console.timeEnd(myFunction);
+  const cardsData: MyCardData[] = useMemo(() => {
+    return generateCardsData(10);
+  }, []);
+
   
   const isMatchingPair = (card1: MyCardData, card2: MyCardData) => {
     return card1.frontImageUri === card2.frontImageUri;
@@ -328,7 +339,13 @@ function App(): JSX.Element {
           backgroundColor: isDarkMode ? Colors.black : Colors.white,
         }}>
         
-        <Board cardsData={cardsData} numberOfColumns={3} isMatchingPair={isMatchingPair} debugMode={true}/>
+        <Board 
+          cardsData={cardsData}
+          numberOfColumns={3}
+          isMatchingPair={isMatchingPair}
+          onRestart={() => {console.log('onRestart'); shuffle(cardsData)}}
+          debugMode={true}
+        />
 
       </View>
     </SafeAreaView>
