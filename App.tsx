@@ -34,12 +34,12 @@ type CardProps = {
   frontImage: ImageSourcePropType;
   onFlip: () => void;
   isFlipped: boolean;
-}; 
+};
 
-const Card = (props: CardProps) => {
+const Card = (cardProps: CardProps) => {
   return (
-    <Pressable onPress={props.onFlip} disabled={props.isFlipped}>
-      <Image source={props.isFlipped? props.frontImage : props.backImage} />
+    <Pressable onPress={cardProps.onFlip} disabled={cardProps.isFlipped}>
+      <Image source={cardProps.isFlipped? cardProps.frontImage : cardProps.backImage} />
     </Pressable>
   );
 }
@@ -130,14 +130,12 @@ const Board = (props: BoardProps) => {
       <Card 
         cardId={cardData.id}
         backImage={{
+          ...styles.cardDimensions,
           uri: defaultCardBackImageUri,
-          width: 64,
-          height: 64,
         }}
         frontImage={{
+          ...styles.cardDimensions,
           uri: cardData.frontImageUri,
-          width: 64,
-          height: 64,
         }}
         onFlip={() => recordCardFlip(cardData)}
         isFlipped={isCardSelectionAlreadyRecorded(cardData)|| (isCardAlreadyMatched(cardData))}
@@ -254,6 +252,10 @@ const styles = StyleSheet.create({
     marginTop: 32,
     marginBottom: 32,
     alignItems: "center"
+  },
+  cardDimensions: {
+    width: 64,
+    height: 64
   }
 });
 
