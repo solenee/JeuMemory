@@ -44,6 +44,65 @@ const Card = (cardProps: CardProps) => {
   );
 }
 
+type EmojiCardProps = {
+  cardProps: CardProps,
+  emoji: string
+}
+
+/*
+  (not working) u'xyz' to indicate a Unicode string, a sequence of Unicode characters
+  (working) '\uxxxx' to indicate a string with a unicode character denoted by four hex digits
+  (not working) '\Uxxxxxxxx' to indicate a string with a unicode character denoted by eight hex digits
+  */
+  // Unicode range for flags: u'[\U0001F1E6-\U0001F1FF]
+const FLAG_BANK = {
+  // Egypte
+  eg: String.fromCodePoint(0x1F1EA, 0x1F1EC), // 🇪🇬
+  // Cote d'Ivoire
+  ci: String.fromCodePoint(0x1F1E8, 0x1F1EE), // 🇨🇮
+  // Cameroun
+  cm: String.fromCodePoint(0x1F1E8, 0x1F1F2), // 🇨🇲
+  // Ghana
+  gh: String.fromCodePoint(0x1F1EC, 0x1F1ED), // 🇬🇭
+  // Nigeria
+  ng: String.fromCodePoint(0x1F1F3, 0x1F1EC), // 🇳🇬
+  // Algerie
+  dz: String.fromCodePoint(0x1F1E9, 0x1F1FF), // 🇩🇿
+  // RDC
+  cd: String.fromCodePoint(0x1F1E8, 0x1F1E9), // 🇨🇩
+  // Zambie
+  zm: String.fromCodePoint(0x1F1FF, 0x1F1F2), // 🇿🇲
+  // Soudan
+  sd: String.fromCodePoint(0x1F1F8, 0x1F1E9), // 🇸🇩
+  // Tunisie
+  tn: String.fromCodePoint(0x1F1F9, 0x1F1F3), // 🇹🇳
+  // Senegal
+  sn: String.fromCodePoint(0x1F1F8, 0x1F1F3), // 🇸🇳
+  // Ethiopie
+  et: String.fromCodePoint(0x1F1EA, 0x1F1F9), // 🇪🇹
+  // Maroc
+  ma: String.fromCodePoint(0x1F1F2, 0x1F1E6), // 🇲🇦
+  // Afrique du Sud
+  za: String.fromCodePoint(0x1F1FF, 0x1F1E6), // 🇿🇦
+  // Congo (Brazzaville)
+  cg: String.fromCodePoint(0x1F1E8, 0x1F1EC), // 🇨🇬
+};
+
+// usage: <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.dz}/>
+const EmojiCard = ({cardProps, emoji}: EmojiCardProps) => {
+  return (
+    <Pressable onPress={cardProps.onFlip} disabled={cardProps.isFlipped}>
+      {cardProps.isFlipped ?
+        <View style={{...styles.cardDimensions, alignItems: "center"}}>
+          <Text style={{fontSize: 40}}>{emoji} </Text>
+        </View>
+      :
+        <Image source={cardProps.backImage} />
+      }
+    </Pressable>
+  );
+}
+
 type MyCardData = {
   id: number,
   frontImageUri: string
@@ -248,7 +307,6 @@ function App(): JSX.Element {
 
 const styles = StyleSheet.create({
   boardContainer: {
-    //flex: 1,
     marginTop: 32,
     marginBottom: 32,
     alignItems: "center"
