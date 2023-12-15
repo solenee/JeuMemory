@@ -20,6 +20,7 @@ import {
   Text,
   useColorScheme,
   View,
+  Alert,
 } from 'react-native';
 
 import {
@@ -79,6 +80,11 @@ const Card = (cardProps: CardProps) => {
 type EmojiCardProps = {
   cardProps: CardProps,
   emoji: string
+}
+
+const EMOJI = {
+  tada: String.fromCodePoint(0x1F389),
+  trophy: String.fromCodePoint(0x1F3C6)
 }
 
 /*
@@ -149,6 +155,7 @@ type BoardProps = {
   numberOfColumns: number;
   isMatchingPair: (card1: MyCardData, card2: MyCardData) => boolean;
   onRestart: () => void;
+  onGameWin: () => void;
   debugMode: boolean;
 };
 
@@ -167,6 +174,10 @@ const Board = (props: BoardProps) => {
   const [pairsFound, setPairsFound] = useState<number[]>([]);
 
   // Model logic 
+
+  if (pairsFound.length === props.cardsData.length) {
+    props.onGameWin();
+  }
 
   const recordCardFlip = (cardData: MyCardData) => {
     console.log('Attempt to flip card [' + cardData.id + ']');
@@ -317,7 +328,7 @@ function App(): JSX.Element {
   // Use memoization for pure calculation that take a significant amount (say, 1ms or more).
   // Computation time can be evaluated with console.time('myFunction'); myFunction(); console.timeEnd(myFunction);
   const cardsData: MyCardData[] = useMemo(() => {
-    return generateCardsData(10);
+    return generateCardsData(12);
   }, []);
 
   
@@ -344,6 +355,7 @@ function App(): JSX.Element {
           numberOfColumns={3}
           isMatchingPair={isMatchingPair}
           onRestart={() => {console.log('onRestart'); shuffle(cardsData)}}
+          onGameWin={() => Alert.alert('Jeu terminé', 'Bravo ! ' + EMOJI.trophy + EMOJI.tada)}
           debugMode={false}
         />
 
