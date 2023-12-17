@@ -31,6 +31,7 @@ const defaultCardBackImageUri = 'https://reactnative.dev/img/tiny_logo.png';
 
 type CardProps = {
   cardId: number;
+  pairId: number|string;
   backImageUri: string;
   frontImageUri: string;
   onFlip: () => void;
@@ -38,39 +39,39 @@ type CardProps = {
 };
 
 const Card = (cardProps: CardProps) => {
-  const backImage: ImageSourcePropType = {
-    ...styles.cardDimensions,
-    uri: cardProps.backImageUri,
-  };
-  const frontImage: ImageSourcePropType = {
-    ...styles.cardDimensions,
-    uri: cardProps.frontImageUri,
-  };
+  // const backImage: ImageSourcePropType = {
+  //   ...styles.cardDimensions,
+  //   uri: cardProps.backImageUri,
+  // };
+  // const frontImage: ImageSourcePropType = {
+  //   ...styles.cardDimensions,
+  //   uri: cardProps.frontImageUri,
+  // };
   // return (
   //   <Pressable onPress={cardProps.onFlip} disabled={cardProps.isFlipped}>
   //     <Image source={cardProps.isFlipped? frontImage : backImage} />
   //   </Pressable>
   // );
-  const pairIdentifier = cardProps.frontImageUri;
-  if (pairIdentifier === IMAGE_URI_BANK[0]) {
+  const pairIdentifier = cardProps.pairId;
+  if (pairIdentifier === 0) {
     return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.eg}/>;
   } else
-  if (pairIdentifier === IMAGE_URI_BANK[1]) {
+  if (pairIdentifier === 1) {
     return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.ci}/>;
   } else
-  if (pairIdentifier === IMAGE_URI_BANK[2]) {
+  if (pairIdentifier === 2) {
     return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.cm}/>;
   } else
-  if (pairIdentifier === IMAGE_URI_BANK[3]) {
+  if (pairIdentifier === 3) {
     return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.gh}/>;
   } else
-  if (pairIdentifier === IMAGE_URI_BANK[4]) {
+  if (pairIdentifier === 4) {
     return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.ng}/>;
   } else
-  if (pairIdentifier === IMAGE_URI_BANK[5]) {
+  if (pairIdentifier === 5) {
     return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.dz}/>;
   } else
-  if (pairIdentifier === IMAGE_URI_BANK[6]) {
+  if (pairIdentifier === 6) {
     return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.cd}/>;
   } else {
     return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.za}/>;
@@ -147,6 +148,7 @@ const EmojiCard = ({cardProps, emoji}: EmojiCardProps) => {
 
 type MyCardData = {
   id: number,
+  pairId: number|string,
   frontImageUri: string
 };
 
@@ -159,14 +161,7 @@ type BoardProps = {
   debugMode: boolean;
 };
 
-const IMAGE_URI_BANK : string[] = [
-  'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
-  'https://github.com/solenee.png',
-  'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/musique-min.jpg',
-  'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/plat-min.jpg',
-  'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/banane-min.jpg',
-  'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/maison-min.jpg'
-];
+
 
 const Board = (props: BoardProps) => {
   const [candidate1, setCandidate1] = useState<MyCardData|undefined>(undefined);
@@ -245,6 +240,7 @@ const Board = (props: BoardProps) => {
     return (
       <Card 
         cardId={cardData.id}
+        pairId={cardData.pairId}
         backImageUri={defaultCardBackImageUri}
         frontImageUri={cardData.frontImageUri}
         onFlip={() => recordCardFlip(cardData)}
@@ -284,6 +280,15 @@ function App(): JSX.Element {
 
   // Cards provider
 
+  const IMAGE_URI_BANK : string[] = [
+    'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
+    'https://github.com/solenee.png',
+    'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/musique-min.jpg',
+    'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/plat-min.jpg',
+    'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/banane-min.jpg',
+    'https://jai-un-pote-dans-la.com/wp-content/uploads/2020/02/maison-min.jpg'
+  ];
+
   function rawCardsData(numberOfPairsToGenerate: number) {
     let data: MyCardData[] = [];
     let cardId: number = 0;
@@ -291,10 +296,12 @@ function App(): JSX.Element {
       data = [...data,
       {
         id: cardId,
+        pairId: pairId,
         frontImageUri: IMAGE_URI_BANK[pairId]
       },
       {
         id: cardId + 1,
+        pairId: pairId,
         frontImageUri: IMAGE_URI_BANK[pairId]
       }
       ];
@@ -333,7 +340,7 @@ function App(): JSX.Element {
 
   
   const isMatchingPair = (card1: MyCardData, card2: MyCardData) => {
-    return card1.frontImageUri === card2.frontImageUri;
+    return card1.pairId === card2.pairId;
   }
 
   // Game
