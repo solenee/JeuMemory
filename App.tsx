@@ -39,53 +39,47 @@ type CardProps = {
 };
 
 const Card = (cardProps: CardProps) => {
-  // const backImage: ImageSourcePropType = {
-  //   ...styles.cardDimensions,
-  //   uri: cardProps.backImageUri,
-  // };
-  // const frontImage: ImageSourcePropType = {
-  //   ...styles.cardDimensions,
-  //   uri: cardProps.frontImageUri,
-  // };
-  // return (
-  //   <Pressable onPress={cardProps.onFlip} disabled={cardProps.isFlipped}>
-  //     <Image source={cardProps.isFlipped? frontImage : backImage} />
-  //   </Pressable>
-  // );
-  const pairIdentifier = cardProps.pairId;
-  if (pairIdentifier === 0) {
-    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.eg}/>;
-  } else
-  if (pairIdentifier === 1) {
-    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.ci}/>;
-  } else
-  if (pairIdentifier === 2) {
-    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.cm}/>;
-  } else
-  if (pairIdentifier === 3) {
-    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.gh}/>;
-  } else
-  if (pairIdentifier === 4) {
-    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.ng}/>;
-  } else
-  if (pairIdentifier === 5) {
-    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.dz}/>;
-  } else
-  if (pairIdentifier === 6) {
-    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.cd}/>;
-  } else {
-    return <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.za}/>;
-  }
+  const backImage: ImageSourcePropType = {
+    ...styles.cardDimensions,
+    uri: cardProps.backImageUri,
+  };
+  const frontImage: ImageSourcePropType = {
+    ...styles.cardDimensions,
+    uri: cardProps.frontImageUri,
+  };
+  return (
+    <Pressable onPress={cardProps.onFlip} disabled={cardProps.isFlipped}>
+      <Image source={cardProps.isFlipped? frontImage : backImage} />
+    </Pressable>
+  );
 }
 
 type EmojiCardProps = {
-  cardProps: CardProps,
   emoji: string
-}
+} & CardProps
 
 const EMOJI = {
   tada: String.fromCodePoint(0x1F389),
-  trophy: String.fromCodePoint(0x1F3C6)
+  trophy: String.fromCodePoint(0x1F3C6),
+  speaker: String.fromCodePoint(0x1F508),
+  tamtam: String.fromCodePoint(0x1FA98),
+  question: String.fromCodePoint(0x2753)
+}
+
+const FOOD_EMOJI = {
+  avocado: String.fromCodePoint(0x1F951),
+  banana: String.fromCodePoint(0x1F34C),
+  coconut: String.fromCodePoint(0x1F965),
+  corn: String.fromCodePoint(0x1F33D),
+  mango: String.fromCodePoint(0x1F96D),
+  peanut: String.fromCodePoint(0x1F95C),
+  pineapple: String.fromCodePoint(0x1F34D)
+}
+
+const TRANSPORT_EMOJI = {
+  airplane: String.fromCodePoint(0x2708, 0xFE0F),
+  canoe: String.fromCodePoint(0x1F6F6),
+  helicopter: String.fromCodePoint(0x1F681),
 }
 
 /*
@@ -127,17 +121,17 @@ const FLAG_BANK = {
   cg: String.fromCodePoint(0x1F1E8, 0x1F1EC), // 🇨🇬
 };
 
-// usage: <EmojiCard cardProps={cardProps} emoji={FLAG_BANK.dz}/>
-const EmojiCard = ({cardProps, emoji}: EmojiCardProps) => {
+// usage: <EmojiCard ... emoji={FLAG_BANK.dz}/>
+const EmojiCard = (props: EmojiCardProps) => {
   const backImage: ImageSourcePropType = {
     ...styles.cardDimensions,
-    uri: cardProps.backImageUri,
+    uri: props.backImageUri,
   };
   return (
-    <Pressable onPress={cardProps.onFlip} disabled={cardProps.isFlipped}>
-      {cardProps.isFlipped ?
+    <Pressable onPress={props.onFlip} disabled={props.isFlipped}>
+      {props.isFlipped ?
         <View style={{...styles.cardDimensions, alignItems: "center"}}>
-          <Text style={{fontSize: 40}}>{emoji} </Text>
+          <Text style={{fontSize: 40}}>{props.emoji}</Text>
         </View>
       :
         <Image source={backImage} />
@@ -236,7 +230,7 @@ const Board = (props: BoardProps) => {
 
   // Visual component 
 
-  const renderCard = (cardData: MyCardData) => {
+  const renderImageCard = (cardData: MyCardData) => {
     return (
       <Card 
         cardId={cardData.id}
@@ -248,6 +242,97 @@ const Board = (props: BoardProps) => {
       />
     );
   }
+
+  const mapToFlagEmoji = (cardData: MyCardData) => {
+    const pairIdentifier = cardData.pairId;
+    let emoji: string;
+    if (pairIdentifier === 0) {
+      emoji = FLAG_BANK.eg;
+    }
+    else if (pairIdentifier === 1) {
+      emoji = FLAG_BANK.ci;
+    }
+    else if (pairIdentifier === 2) {
+      emoji = FLAG_BANK.cm;
+    }
+    else if (pairIdentifier === 3) {
+      emoji = FLAG_BANK.gh;
+    }
+    else if (pairIdentifier === 4) {
+      emoji = FLAG_BANK.ng;
+    }
+    else if (pairIdentifier === 5) {
+      emoji = FLAG_BANK.dz;
+    }
+    else if (pairIdentifier === 6) {
+      emoji = FLAG_BANK.cd;
+    } else {
+      emoji = FLAG_BANK.za;
+    }
+    return emoji;
+  }
+
+  const mapToFoodEmoji = (cardData: MyCardData) => {
+    const pairIdentifier = cardData.pairId;
+    let emoji: string;
+    if (pairIdentifier === 0) {
+      emoji = FOOD_EMOJI.avocado;
+    }
+    else if (pairIdentifier === 1) {
+      emoji = FOOD_EMOJI.banana;
+    }
+    else if (pairIdentifier === 2) {
+      emoji = FOOD_EMOJI.coconut;
+    }
+    else if (pairIdentifier === 3) {
+      emoji = FOOD_EMOJI.corn;
+    }
+    else if (pairIdentifier === 4) {
+      emoji = FOOD_EMOJI.mango;
+    }
+    else if (pairIdentifier === 5) {
+      emoji = FOOD_EMOJI.peanut;
+    }
+    else {
+      emoji = FOOD_EMOJI.pineapple;
+    }
+    return emoji;
+  }
+
+  const mapToHouseItemEmoji = (cardData: MyCardData) => {
+    const pairIdentifier = cardData.pairId;
+    let emoji: string;
+    if (pairIdentifier === 0) {
+      emoji = TRANSPORT_EMOJI.canoe;
+    }
+    else if (pairIdentifier === 1) {
+      emoji = TRANSPORT_EMOJI.helicopter;
+    }
+    else {
+      emoji = TRANSPORT_EMOJI.airplane;
+    }
+    return emoji;
+  }
+
+
+  const renderEmojiCard = (cardData: MyCardData, mapToEmoji: (data: MyCardData) => string) => {
+    let emoji: string = mapToEmoji(cardData);
+    return (
+      <EmojiCard
+        cardId={cardData.id}
+        pairId={cardData.pairId}
+        backImageUri={defaultCardBackImageUri}
+        frontImageUri={cardData.frontImageUri}
+        emoji={emoji}
+        onFlip={() => recordCardFlip(cardData)}
+        isFlipped={isCardSelectionAlreadyRecorded(cardData)|| (isCardAlreadyMatched(cardData))}
+      />
+    );
+  }
+
+  // const renderCard = (item: MyCardData) => renderEmojiCard(item, mapToFlagEmoji);
+  const renderCard = (item: MyCardData) => renderEmojiCard(item, mapToFoodEmoji);
+  // const renderCard = renderImageCard;
 
   return (
     <View>
