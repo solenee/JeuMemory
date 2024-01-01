@@ -23,6 +23,9 @@ import {
   Alert,
 } from 'react-native';
 
+// npm install react-native-svg
+import Svg, { Circle } from 'react-native-svg';
+
 import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen';
@@ -131,7 +134,7 @@ const EmojiCard = (props: EmojiCardProps) => {
     <Pressable onPress={props.onFlip} disabled={props.isFlipped}>
       {props.isFlipped ?
         <View style={{...styles.cardDimensions, alignItems: "center"}}>
-          <Text style={{fontSize: 40}}>{props.emoji}</Text>
+          <Text style={styles.emojiText}>{props.emoji}</Text>
         </View>
       :
         <Image source={backImage} />
@@ -299,7 +302,7 @@ const Board = (props: BoardProps) => {
     return emoji;
   }
 
-  const mapToHouseItemEmoji = (cardData: MyCardData) => {
+  const mapToTransportEmoji = (cardData: MyCardData) => {
     const pairIdentifier = cardData.pairId;
     let emoji: string;
     if (pairIdentifier === 0) {
@@ -452,19 +455,34 @@ function App(): JSX.Element {
         />
 
       </View>
+
+      <View style={styles.svgContainer}>
+        <Svg height="50%" width="50%" viewBox="0 0 100 100" >
+          <Circle cx="50" cy="50" r="50" stroke="blue" strokeWidth=".5" fill="blue" />
+          <Circle cx="50" cy="50" r="25" stroke="blue" strokeWidth=".5" fill="orange" />
+        </Svg>
+      </View>
+      
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   boardContainer: {
-    marginTop: 32,
+    marginTop: '25%',
     marginBottom: 32,
     alignItems: "center"
   },
   cardDimensions: {
-    width: 64,
-    height: 64
+    width: 90,
+    height: 90
+  },
+  emojiText: {
+    fontSize: 60
+  },
+  svgContainer: {
+    marginTop: '10%',
+    alignItems: "center"
   }
 });
 
